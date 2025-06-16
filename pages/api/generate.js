@@ -1,19 +1,18 @@
-import chromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
+import chromium from 'chrome-aws-lambda';
 
 const handler = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
 
   try {
     const data = req.body;
-    const isDev = !process.env.AWS_REGION; // Render ≠ AWS = production
+
+    const executablePath = await chromium.executablePath;
 
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: isDev
-        ? undefined
-        : await chromium.executablePath,
+      executablePath: executablePath, // usar apenas binário do chrome-aws-lambda
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
