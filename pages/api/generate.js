@@ -6,13 +6,14 @@ const handler = async (req, res) => {
 
   try {
     const data = req.body;
-
-    const executablePath = await chromium.executablePath || '/usr/bin/chromium-browser';
+    const isDev = !process.env.AWS_REGION; // Render ≠ AWS = production
 
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath,
+      executablePath: isDev
+        ? undefined
+        : await chromium.executablePath,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
