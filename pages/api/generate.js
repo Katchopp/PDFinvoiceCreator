@@ -7,12 +7,14 @@ const handler = async (req, res) => {
   try {
     const data = req.body;
 
-    const executablePath = await chromium.executablePath;
+    const isProduction = !!process.env.AWS_REGION;
 
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath, // usar apenas binário do chrome-aws-lambda
+      executablePath: isProduction
+        ? await chromium.executablePath
+        : undefined,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
